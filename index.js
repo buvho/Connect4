@@ -21,26 +21,44 @@ function collunClicked()
 {
     if (isRunning)
     {
-    pos = this.getAttribute("posC")
-    const selected = players[next2P]
-    if (floor[pos] != -1){
-    draw(this,pos,selected)
-    checkWin(pos,selected[0])
-    floor[pos] -= 1
-    }
+        pos = this.getAttribute("posC")
+        const selected = players[next2P]
+        if (floor[pos] != -1){
+        draw(this,pos,selected)
+        checkWin(pos,selected[0])
+        }
     }
 }
 
-function draw(collun,pos,selected)
+function draw(collun,pos,selected) // cria o marcador na tela e no array
 {  
-    const chosen = collun.children[floor[pos]]
-    chosen.innerText = selected[0]
-    board [floor[pos]][pos] = selected[0]
-    chosen.style.color = selected[1]
-    console.log(board[floor[pos]])
+    const animPiece = document.createElement('div');
+
+    const floorDistance = (Math.abs(floor[pos] - 7) * 75 + 45) * -1;
+    const animationDuration = 0.1 + floor[pos] * 0.05;
+    animPiece.className = 'anim-piece';
+    animPiece.style.setProperty('--floor-distance', `${floorDistance}px`);
+    animPiece.style.animationDuration = `${animationDuration}s`;
+    animPiece.innerText = selected[0];
+    animPiece.style.color = selected[1];
+    animPiece.style.width = '75px';
+    animPiece.style.height = '75px';
+    
+
+    collun.appendChild(animPiece);
+
+    animPiece.addEventListener('animationend', () => {
+        animPiece.remove();
+        const chosen = collun.children[floor[pos]]
+        chosen.innerText = selected[0]
+        board [floor[pos]][pos] = selected[0]
+        chosen.style.color = selected[1]
+        floor[pos] -= 1
+        console.log(board[floor[pos]])
+    });
 }
 
-function checkWin(pos,char)
+function checkWin(pos,char) // checa se o algum jogador ganhou
 {
     //horizontal
     let checks = 0
@@ -90,7 +108,7 @@ function checkWin(pos,char)
     turnChange()
 }
 
-function win()
+function win() // se o jogador ganhou, desabilita o jogo e mostra a mensagem de vitoria
 {
 texto.textContent = `o jogador ${next2P + 1} ganhou`
 isRunning = false
@@ -101,7 +119,7 @@ colluns.forEach(collun =>
     )
 }
 
-function turnChange()
+function turnChange() // troca o turno do jogador
 {
     if (next2P < playerCount)
     {
